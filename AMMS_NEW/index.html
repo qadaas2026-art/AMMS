@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>الصيانة الوقائية (OFFLINE)</title>
+<style>
+:root{--primary:#00A9E0;--primary-dark:#0078b8;--accent:#1bb34f;--bg:#fff;--text:#111;--muted:#6e6e6e;--surface:#f5f7fb;--radius:12px}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:system-ui,-apple-system,'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+.center{text-align:center}
+.app-header{display:grid;justify-items:center;gap:6px;padding:14px 16px;background:var(--surface);border-bottom:1px solid #e5e8ef}
+.dnata{font-weight:900;font-size:54px;color:var(--primary);line-height:1}
+.program{font-weight:800;font-size:18px;color:#2e2e2e}
+.lang-toggle{cursor:pointer;padding:6px 12px;border:1px solid #d2d6e0;border-radius:999px;font-size:14px;background:#fff}
+.app-content{flex:1;padding:18px 12px;max-width:980px;margin:0 auto;width:100%;display:grid;justify-items:center}
+.status{margin:10px 0;padding:10px;border-radius:8px;background:#fff3cd;color:#664d03;border:1px solid #ffecb5;display:none;white-space:pre-line}
+.section{display:none;width:100%;max-width:900px}
+.section.active{display:block}
+.buttons{display:grid;grid-template-columns:1fr;gap:10px;width:100%}
+button{border:none;border-radius:var(--radius);padding:12px 14px;font-size:16px;cursor:pointer}
+button.primary{background:var(--primary);color:#fff}
+button.primary:hover{background:var(--primary-dark)}
+button.secondary{background:#e9f6fd;color:#0078d4}
+button.ghost{background:transparent;color:#0078d4;border:1px solid #d2d6e0}
+.hint{color:var(--muted);margin-top:6px;text-align:center}
+.form{display:grid;gap:10px;width:100%}
+input[type=text],select,textarea,input[type=datetime-local]{padding:10px;border:1px solid #d2d6e0;border-radius:var(--radius);font-size:16px}
+.form-actions{display:flex;gap:10px;margin-top:6px;justify-content:center}
+.scan-ui{display:grid;gap:10px}
+#video,#phVideo{width:100%;max-height:360px;background:#000;border-radius:12px}
+.msg{color:var(--muted);text-align:center}
+.headerCard{border:1px solid #e5e8ef;border-radius:12px;background:#fff;padding:10px;display:grid;gap:10px;margin:10px auto;max-width:900px}
+.headerTop{display:grid;grid-template-columns:1fr auto;align-items:center}
+.titleWrap{display:grid;gap:4px;grid-column:1/-1}
+.title{font-weight:900;font-size:20px;text-align:center}
+.thinGreen{height:3px;background:var(--accent);border-radius:3px}
+.headerGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.kv{display:grid;gap:4px;border:1px solid #eef1f6;border-radius:10px;padding:8px;background:#fafcff}
+.kv label{font-size:12px;color:#637083}
+.kv .val{font-weight:600}
+.kv.readonly{background:#f7f9fd}
+.qrHolder{width:92px;height:92px;border:1px dashed #c8d4e3;border-radius:10px;display:grid;place-items:center;background:#fff}
+.checklist{margin-top:10px;display:grid;gap:10px}
+.group{border:1px solid #e5e8ef;border-radius:12px;background:#fff}
+.group h4{margin:0;padding:8px 10px;border-bottom:1px solid #eff2f7;background:#f9fbff;font-weight:800}
+.itemRow{display:grid;grid-template-columns:2fr .9fr 1.4fr auto;gap:8px;align-items:start;padding:8px 10px;border-top:1px solid #f0f3f8}
+.labelBox{border:1px solid #e5e8ef;border-radius:10px;background:#fafafa;padding:8px 10px}
+.labelBox .ar{font-weight:400;margin-bottom:3px}
+.labelBox .en{font-size:13px;color:#5c6b7a;font-weight:400}
+.attach-photo{background:#fff;color:#0078d4;border:1px solid #d2d6e0;border-radius:8px;padding:8px}
+.photosWrap{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.phThumb{width:64px;height:64px;border-radius:8px;border:1px solid #d8e1ec;object-fit:cover}
+.remarks.red{border-color:#f44336;box-shadow:0 0 0 2px rgba(244,67,54,.08)}
+.actions-bar{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.app-footer{margin-top:auto;padding:10px 8px;border-top:1px solid #e5e8ef;background:#fff;text-align:center;color:#8a97a6;font-size:12px}
+/* PRINT DOM */
+#printRoot{position:relative;width:800px;margin:0 auto;background:#fff;color:#000;padding:16px}
+.brand{font-weight:900;font-size:28px;color:var(--primary);}
+.print-title{font:bold 18px/1.2 'Segoe UI',Tahoma,Arial;margin-top:4px}
+.print-line{height:3px;background:#1bb34f;margin:6px 0}
+.print-header{display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:start}
+.print-kv{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.print-kv .cell{background:#f4f9ff;border:1px solid #e1e7f1;border-radius:8px;padding:6px}
+.print-kv .lab{color:#586781;font:600 12px/1.2 'Segoe UI',Tahoma,Arial}
+.print-kv .val{color:#111;font:600 12px/1.2 'Segoe UI',Tahoma,Arial}
+.print-qr{width:100px;height:100px;border:1px solid #ddd;border-radius:8px;display:grid;place-items:center}
+.print-group{margin-top:10px}
+.print-group h4{font:700 14px 'Segoe UI',Tahoma,Arial;margin:0 0 6px}
+.grid-head, .grid-row{display:grid;grid-template-columns:1fr 120px 220px;border:1px solid #d9e1ea}
+.grid-head > div{background:#f4f9ff;padding:6px 8px;font:600 12px 'Segoe UI',Tahoma,Arial}
+.grid-row > div{padding:6px 8px;font:12px 'Segoe UI',Tahoma,Arial;border-top:1px solid #e9eef6}
+.grid-row .badge{display:inline-block;background:#eef6ff;color:#1456b8;border:1px solid #c9defe;border-radius:12px;padding:0 6px;margin-inline-start:6px;font:600 10px 'Segoe UI'}
+.sign{margin-top:14px;padding-top:10px;border-top:1px solid #dfe6ef;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sign .cell{background:#f9fbff;border:1px dashed #cbd6e2;border-radius:8px;padding:8px;font:12px 'Segoe UI',Tahoma}
+.photos{page-break-before:always;margin-top:12px}
+.photos h4{font:700 14px 'Segoe UI',Tahoma,Arial;margin:0 0 6px}
+.photos-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fig{display:grid;gap:6px}
+.fig img{width:100%;height:auto;border:1px solid #cfd8e3;border-radius:10px}
+.fig .cap{font:600 11px 'Segoe UI';color:#394b59}
+</style>
+<script src="./libs/xlsx.full.min.js"></script>
+<script src="./libs/html2canvas.min.js"></script>
+<script src="./libs/jspdf.umd.min.js"></script>
+<script src="./libs/qrcode.min.js"></script>
+<script src="./libs/zxing-browser.min.js"></script>
+</head>
+<body>
+<header class="app-header center">
+  <div class="dnata">dnata</div>
+  <div class="program" id="programName">Asset Maintenance System</div>
+  <button class="lang-toggle" id="langToggle">AR / EN</button>
+  <div class="small" id="buildTag">v11.2_PATCH_2026-01-28_1118_Rev4</div>
+</header>
+<main class="app-content">
+  <div id="status" class="status"></div>
+
+  <section id="homeSection" class="section active">
+    <div class="buttons">
+      <button id="btnScan" class="primary">امسح الكيو آر</button>
+      <button id="btnEnterName" class="secondary">إدخال اسم الماكِنة / الآلية</button>
+      <button id="btnManual" class="secondary">المانيـوال</button>
+    <button id="btnMonthlyFaults" class="secondary">تقرير الأعطال الشهريه</button>
+    <button id="btnAdmin" class="secondary" style="background:#1bb34f;color:#fff">الإدارة</button>
+
+    </div>
+    <p class="hint" id="homeHint">استخدم الكاميرا لمسح كود QR أو أدخل الاسم يدويًا</p>
+  </section>
+
+  <section id="scanSection" class="section">
+    <div class="scan-ui">
+      <div class="camBar note" id="scanNote">وجّه الكاميرا نحو الكيو‑آر… (يبدأ المسح تلقائيًا)</div>
+      <video id="video" playsinline></video>
+      <div class="form-actions">
+        <button id="backHomeScan" class="ghost">رجوع</button>
+      </div>
+      <p class="hint">إن لم تظهر صورة الكاميرا: افتح قفل الموقع قرب شريط العنوان، واسمح بالكاميرا.</p>
+    </div>
+  </section>
+
+  <section id="nameSection" class="section">
+    <div class="headerCard" id="headerCard" style="display:none">
+      <div class="titleWrap">
+        <div class="title" id="hdrTitle">استمارة الصيانة الوقائية</div>
+        <div class="thinGreen"></div>
+      </div>
+      <div class="headerTop">
+        <div class="headerGrid" id="headerGrid"></div>
+        <div class="qrHolder"><div id="qrBox" style="width:84px;height:84px"></div></div>
+      </div>
+    </div>
+
+    <div class="form" id="nameForm" style="margin-top:6px">
+      <label for="machineName" id="lblMachineName">اسم الآلة / الكود</label>
+      <input type="text" id="machineName" placeholder="مثال: K72" />
+      <div class="form-actions" id="nameActions">
+        <button id="confirmName" class="primary">تأكيد</button>
+        <button id="backHomeName" class="ghost">رجوع</button>
+      </div>
+    </div>
+
+    <div id="checklistView" class="checklist"></div>
+
+    <div class="actions-bar" id="bottomBar" style="display:none">
+      <button id="btnExportPDF" class="primary">تصدير PDF</button>
+      <button id="btnShare" class="secondary">مشاركة (واتساب/إيميل)</button>
+      <button id="btnBackBottom" class="ghost">رجوع</button>
+    </div>
+  </section>
+
+  <section id="manualSection" class="section">
+    <div class="form">
+      <label for="manualOpenInput" id="lblManualOpen">أدخل اسم الآلة / الكود لفتح المانيـوال (PDF)</label>
+      <input type="text" id="manualOpenInput" placeholder="مثال: K72" />
+      <div class="form-actions">
+        <button id="openManualBtn" class="primary">فتح المانيـوال</button>
+        <button id="backHomeManual" class="ghost">رجوع</button>
+      </div>
+      <p class="hint" id="manualHint">سيُفتح من مجلد <b>manual/الاسم.pdf</b></p>
+    </div>
+  </section>
+
+  <section id="photoSection" class="section">
+    <div class="scan-ui">
+      <div class="camBar note" id="phNote">التقط صورة للخلل (اضغط "التقاط الصورة")</div>
+      <video id="phVideo" playsinline></video>
+      <div class="form-actions">
+        <button id="btnTakePhoto" class="primary">التقاط الصورة</button>
+        <button id="backFromPhoto" class="ghost">رجوع</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="printRoot" style="display:none" aria-hidden="true"></div>
+
+
+  <section id="faultsSection" class="section"></section>
+  <section id="adminSection" class="section"></section>
+
+</main>
+<footer class="app-footer center">
+  <span>Created by Eng. Mu'ez Al Da'as — dnata flight services</span>
+</footer>
+<script>
+(function(){
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const $=(id)=>document.getElementById(id);
+    const status=$('status');
+    const setStatus=(m)=>{ if(!m){ status.style.display='none'; status.textContent=''; } else{ status.style.display='block'; status.textContent=m; } };
+
+    const secIds=['homeSection','scanSection','nameSection','manualSection','photoSection'];
+    const show=(id)=>{ secIds.forEach(k=>{ const el=$(k); if(el) el.classList.remove('active');}); const t=$(id); if(t) t.classList.add('active'); };
+
+    const T={AR:{scan:'امسح الكيو آر', enter:'إدخال اسم الماكِنة / الآلية', manual:'المانيـوال', hint:'استخدم الكاميرا لمسح كود QR أو أدخل الاسم يدويًا', back:'رجوع', confirm:'تأكيد', exportPDF:'تصدير PDF', share:'مشاركة (واتساب/إيميل)', machineLabel:'اسم الآلة / الكود', phMachine:'مثال: K72', title:'استمارة الصيانة الوقائية', noItems:'لا توجد عناصر فحص.', remarks:'ملاحظات', saved:'تم حفظ الملف.', cameraAuto:'وجّه الكاميرا نحو الكيو‑آر… (يبدأ المسح تلقائيًا)', takePhoto:'التقاط الصورة', openManual:'فتح المانيـوال', manualHint:'سيُفتح من مجلد <b>manual/الاسم.pdf</b>', hdr:{date:'التاريخ', tech:'اسم الفني', code:'كود', machine:'اسم الآلة', location:'الموقع', manufacturer:'الشركة المصنِّعة', warranty:'الضمان', serial:'الرقم التسلسلي', model:'موديل', purchaseDate:'تاريخ الشراء', inDate:'تاريخ الإدخال'}, photos:'صور الأعطال', sign:'اسم وتوقيع المشرف', sdate:'التاريخ', item:'العنصر (AR/EN)', status:'الحالة'}, EN:{scan:'Scan QR', enter:'Enter machine / device name', manual:'Manual', hint:'Use camera to scan QR or enter manually', back:'Back', confirm:'Confirm', exportPDF:'Export PDF', share:'Share (WhatsApp/Email)', machineLabel:'Machine / Code', phMachine:'e.g. K72', title:'Preventive Maintenance Form', noItems:'No checklist items found.', remarks:'Remarks', saved:'File saved.', cameraAuto:'Point camera to QR… (auto scan)', takePhoto:'Take Photo', openManual:'Open Manual', manualHint:'Will open from <b>manual/name.pdf</b>', hdr:{date:'Date', tech:'Technician', code:'Code', machine:'Machine', location:'Location', manufacturer:'Manufacturer', warranty:'Warranty', serial:'Serial Number', model:'Model', purchaseDate:'Purchase Date', inDate:'In Date'}, photos:'Fault Photos', sign:'Supervisor name & signature', sdate:'Date', item:'Item (AR/EN)', status:'Status'} };
+
+    const state={lang:'AR', currentId:null, header:{}, groups:[], stream:null, zxing:null, scanning:false, photo:{gi:null,ii:null}, phStream:null};
+
+    function applyLang(){ const tr=T[state.lang]; const set=(id,txt)=>{ const el=$(id); if(el) el.textContent=txt; };
+      set('btnScan',tr.scan); set('btnEnterName',tr.enter); set('btnManual',tr.manual); set('homeHint',tr.hint); set('backHomeScan',tr.back); set('confirmName',tr.confirm); set('backHomeName',tr.back); set('btnBackBottom',tr.back); set('btnExportPDF',tr.exportPDF); set('btnShare',tr.share); set('lblManualOpen',tr.openManual); set('hdrTitle',tr.title); set('scanNote',tr.cameraAuto); set('btnTakePhoto',tr.takePhoto); set('lblMachineName',tr.machineLabel);
+      // Manual page localized buttons + hint
+      set('openManualBtn',tr.openManual); set('backHomeManual',tr.back); const mh=$('manualHint'); if(mh) mh.innerHTML=tr.manualHint;
+      const mi=$('manualOpenInput'); if(mi) mi.placeholder=tr.phMachine; const mn=$('machineName'); if(mn) mn.placeholder=tr.phMachine; const lt=$('langToggle'); if(lt) lt.textContent=(state.lang==='AR'?'AR / EN':'EN / AR');
+      renderHeader(); renderChecklist();
+    }
+    function toggleLang(){ state.lang=(state.lang==='AR'?'EN':'AR'); localStorage.setItem('pm_lang',state.lang); document.documentElement.dir=(state.lang==='AR'?'rtl':'ltr'); document.documentElement.lang=(state.lang==='AR'?'ar':'en'); applyLang(); }
+
+    const firstNonEmpty=r=>{ if(!r) return ''; for(let i=0;i<r.length;i++){ const s=String(r[i]||'').trim(); if(s) return s; } return ''; };
+    const norm=s=> String(s||'').replace(/[\u200f\u200e]/g,'').trim();
+    const hasAr=s=> /[\u0600-\u06FF]/.test(String(s||''));
+    const englishScore=s=>{ s=norm(s); const en=(s.match(/[A-Za-z]/g)||[]).length; const ar=(s.match(/[\u0600-\u06FF]/g)||[]).length; return en-ar; };
+    const isPureEn=s=> englishScore(s)>=3 && !hasAr(s);
+    const looksLikeGroup=(s)=>{ s=norm(s); if(!/\//.test(s)) return false; const p=s.split('/'); if(p.length<2) return false; const ar=norm(p[0]); const en=norm(p.slice(1).join('/')).toLowerCase(); const GA=['السلامة','الكهرباء','الميكانيك','التمديدات والتصريف','النظافة والصحة','المعايرة والأداء','التوثيق']; const GE=['safety','electrical','mechanical','plumbing & drainage','sanitation & hygiene','calibration & performance','documentation']; return GA.some(x=> ar.startsWith(x)) && GE.some(x=> en.startsWith(x)); };
+    function findHeaderEnd(rows){ for(let i=0;i<rows.length;i++){ const cell=norm(firstNonEmpty(rows[i])||''); if(looksLikeGroup(cell)) return i; } return Math.min(60,rows.length); }
+
+    function keyOfFactory(){ const MAP={ date:['التاريخ','date'], tech:['اسم الفني','technician','technician name'], code:['code','#','كود'], machine:['machine name','machine','اسم الآلة','اسم الماكِنة','اسم الماكنة'], location:['location','الموقع'], purchaseDate:['purchase date','purchase','تاريخ الشراء'], inDate:['in date','in-date','تاريخ الإدخال','entry date','date of entry'], manufacturer:['manufacturer','الشركة المصنِّعة','المصنع'], warranty:['warranty','الضمان'], serial:['serial number','serial','الرقم التسلسلي'], model:['model number','model','موديل','موديل نمبر'], bothDates:['purchase/in date','purchase / in date','purchase & in date','تاريخ الشراء/الإدخال','الشراء/الإدخال'] }; const all=Object.keys(MAP).map(k=>[k,MAP[k]]); return (a)=>{ a=norm(a).toLowerCase(); for(const [k,arr] of all){ if(arr.some(x=> a.includes(x))) return k; } return null; } }
+
+    function excelSerialToISO(v){ try{ const base=new Date(Date.UTC(1899,11,30)); const date=new Date(base.getTime() + Math.round(Number(v))*86400000); const y=date.getUTCFullYear(); const m=String(date.getUTCMonth()+1).padStart(2,'0'); const d=String(date.getUTCDate()).padStart(2,'0'); return `${y}-${m}-${d}`; }catch(_){ return String(v); } }
+
+    function parseHeader(rows){ const end=findHeaderEnd(rows); const H={}; const keyOf=keyOfFactory();
+      function cleanVal(v){ if(v==null) return ''; if(typeof v==='number' && v>20000 && v<60000) return excelSerialToISO(v); return String(v); }
+      function nextValueFrom(r){ let rr=r+1; while(rr<end && !norm(firstNonEmpty(rows[rr]))) rr++; const ahead=norm(firstNonEmpty(rows[rr])||''); if(!ahead) return ''; const maybeKey=keyOf(ahead); if(maybeKey || looksLikeGroup(ahead)) return ''; return cleanVal(ahead); }
+      for(let r=0;r<end;r++){
+        const a=norm(rows[r][0]||''); let b=rows[r][1]; let bClean=cleanVal(b); if(!a) continue; const k=keyOf(a); if(!k) continue; let v=bClean; if(!v){ const parts=a.split(/[:：]/); if(parts.length>1 && norm(parts.slice(1).join(':'))) v=norm(parts.slice(1).join(':')); }
+        if(!v) v=nextValueFrom(r);
+        if(k==='bothDates'){
+          const cell=v||''; const m=String(cell).match(/(\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4}|\d{4}[\/-]\d{1,2}[\/-]\d{1,2})\s*[^\d]+(\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4}|\d{4}[\/-]\d{1,2}[\/-]\d{1,2})/);
+          if(m){ H.purchaseDate=m[1]; H.inDate=m[2]; } else { const v1=nextValueFrom(r); const v2=nextValueFrom(r+1); if(v1) H.purchaseDate=v1; if(v2) H.inDate=v2; }
+        } else if(v) { const vv=cleanVal(v); H[k]=vv; }
+      }
+      const dateRe=/(\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4}|\d{4}[\/-]\d{1,2}[\/-]\d{1,2})/;
+      for(let r=0;r<end;r++){
+        const row=rows[r]||[]; for(let c=0;c<Math.min(6,row.length);c++){
+          const cell=norm(row[c]||''); const next=cleanVal(row[c+1]); if(!cell) continue; const low=cell.toLowerCase();
+          if(!H.purchaseDate && /(purchase|الشراء|شراء)/.test(low) && dateRe.test(next)) H.purchaseDate=next;
+          if(!H.inDate && /(in date|entry|الإدخال|ادخال)/.test(low) && dateRe.test(next)) H.inDate=next;
+        }
+      }
+      return H; }
+
+    function parseChecklist(rows){ const start=findHeaderEnd(rows); const groups=[]; let cur=null; let i=start; const eq=(a,b)=> norm(a).toLowerCase()===norm(b).toLowerCase(); while(i<rows.length){ const line=norm(firstNonEmpty(rows[i])||''); if(!line){ i++; continue; } if(looksLikeGroup(line)){ const p=line.split('/'); cur={titleAR:norm(p[0]), titleEN:norm(p.slice(1).join('/')), items:[]}; groups.push(cur); i++; continue; }
+      const hasSlash=/\//.test(line); if(hasSlash){ const ps=line.split('/'); const left=norm(ps[0]); const right=norm(ps.slice(1).join('/')); if(hasAr(left) && isPureEn(right)){ if(!cur){ cur={titleAR:'عام', titleEN:'General', items:[]}; groups.push(cur);} cur.items.push({ar:left,en:right,status:'ok',remarks:'',photos:[]}); const nxt=i+1<rows.length? norm(firstNonEmpty(rows[i+1])||''):''; if(eq(nxt,right)) i+=2; else i++; continue; } }
+      const next=i+1<rows.length? norm(firstNonEmpty(rows[i+1])||''):''; const next2=i+2<rows.length? norm(firstNonEmpty(rows[i+2])||''):''; let arLine='', enLine=''; const lineIsAr=hasAr(line); const nextIsEn=isPureEn(next); const next2Boundary=(!next2 || hasAr(next2) || looksLikeGroup(next2)); if(lineIsAr && nextIsEn && next2Boundary){ arLine=line; enLine=next; i+=2; } else { if(lineIsAr){ arLine=line; enLine=''; } else { arLine=''; enLine=line; } i++; }
+      if(!cur){ cur={titleAR:'عام', titleEN:'General', items:[]}; groups.push(cur);} cur.items.push({ar:arLine, en:enLine, status:'ok', remarks:'', photos:[]}); }
+      return groups; }
+
+    function getQRDataURL(text,size){ try{ if(!text) return null; const tmp=document.createElement('div'); new QRCode(tmp,{text:text,width:size,height:size}); let data=null; const cnv=tmp.querySelector('canvas'); if(cnv){ data=cnv.toDataURL('image/png'); } else { const img=tmp.querySelector('img'); if(img && img.src && img.src.startsWith('data:image')) data=img.src; } tmp.remove(); return data; }catch(_){ return null; } }
+
+    function renderHeader(){ const H=state.header||{}; const grid=$('headerGrid'); if(!grid) return; grid.innerHTML=''; const L=T[state.lang].hdr; const addRO=(lab,val)=>{ const d=document.createElement('div'); d.className='kv readonly'; const l=document.createElement('label'); l.textContent=lab; const v=document.createElement('div'); v.className='val'; v.textContent=val||''; d.appendChild(l); d.appendChild(v); grid.appendChild(d); };
+      const dt=document.createElement('div'); dt.className='kv'; const dtLab=document.createElement('label'); dtLab.textContent=L.date; dt.appendChild(dtLab); const inp=document.createElement('input'); inp.type='datetime-local'; try{ const now=new Date(); const tz= now.getTimezoneOffset()*60000; const localISO=new Date(now - tz).toISOString().slice(0,16); inp.value= H.date? H.date : localISO; }catch(_){} inp.oninput=()=>{ state.header.date=inp.value; }; dt.appendChild(inp); grid.appendChild(dt);
+      const tDiv=document.createElement('div'); tDiv.className='kv'; const tLab=document.createElement('label'); tLab.textContent=L.tech; tDiv.appendChild(tLab); const tInput=document.createElement('input'); tInput.type='text'; tInput.setAttribute('list','techList'); tInput.placeholder='اكتب اسم الفني أو اختر…'; tInput.value=H.tech||''; tInput.oninput=()=>{ state.header.tech=tInput.value; }; tDiv.appendChild(tInput); grid.appendChild(tDiv);
+      if(!document.getElementById('techList')){ const dl=document.createElement('datalist'); dl.id='techList'; ['', 'حامد الجابر','ناصر كامل','يوسف محمد','عبد الله الصواف','أحمد عاص','أحمد الحاج','عماد القيسي','خالد عوض','شادي المصري','محمد موسى','علاء إسماعيل','علي الشريف','وسام العساف','محمد مهزع','لؤي جمال'].forEach(n=>{ const o=document.createElement('option'); o.value=n; dl.appendChild(o); }); document.body.appendChild(dl); }
+      addRO(L.code, (H.code!=null?String(H.code):(state.currentId||''))); addRO(L.machine, H.machine||''); addRO(L.location, H.location||''); addRO(L.manufacturer, H.manufacturer||''); addRO(L.serial, H.serial||''); addRO(L.model, H.model||''); addRO(L.warranty, H.warranty||''); addRO(L.purchaseDate, H.purchaseDate||''); addRO(L.inDate, H.inDate||'');
+      $('headerCard').style.display='block'; $('bottomBar').style.display='flex'; $('nameForm').style.display='none'; $('hdrTitle').textContent=T[state.lang].title; const qrBox=$('qrBox'); qrBox.innerHTML=''; const qrText=(H.code!=null? String(H.code): (state.currentId||'')); const data=getQRDataURL(qrText,84); if(data){ const img=new Image(); img.width=84; img.height=84; img.src=data; qrBox.appendChild(img); }
+    }
+
+    function renderChecklist(){ const host=$('checklistView'); if(!host) return; host.innerHTML=''; const groups=state.groups||[]; if(!groups.length){ const p=document.createElement('p'); p.className='msg'; p.textContent=T[state.lang].noItems; host.appendChild(p); return; } groups.forEach((g,gi)=>{ const box=document.createElement('div'); box.className='group'; const h=document.createElement('h4'); h.textContent=`${g.titleAR} / ${g.titleEN}`; box.appendChild(h); g.items.forEach((it,ii)=>{ const row=document.createElement('div'); row.className='itemRow'; const label=document.createElement('div'); label.className='labelBox'; if(it.ar){ const ar=document.createElement('div'); ar.className='ar'; ar.textContent=it.ar; label.appendChild(ar); } if(it.en){ const en=document.createElement('div'); en.className='en'; en.textContent=it.en; label.appendChild(en); } const sel=document.createElement('select'); [['ok','OK'],['fault','NOT OK']].forEach(([v,txt])=>{ const o=document.createElement('option'); o.value=v; o.textContent=txt; sel.appendChild(o); }); sel.value=it.status; const rem=document.createElement('textarea'); rem.rows=2; rem.placeholder=T[state.lang].remarks; rem.value=it.remarks||''; rem.className='remarks'; if(it.status==='fault') rem.classList.add('red'); const side=document.createElement('div'); side.style.display='grid'; side.style.gap='6px'; const btn=document.createElement('button'); btn.className='attach-photo'; btn.textContent='📷'; btn.style.display= it.status==='fault'? 'inline-block':'none'; const wrap=document.createElement('div'); wrap.className='photosWrap'; (it.photos||[]).forEach((src,idx)=>{ const img=document.createElement('img'); img.src=src; img.className='phThumb'; img.title='إزالة'; img.onclick=()=>{ it.photos.splice(idx,1); renderChecklist(); }; wrap.appendChild(img); }); side.appendChild(btn); side.appendChild(wrap); sel.onchange=()=>{ it.status=sel.value; if(it.status==='fault'){ rem.classList.add('red'); btn.style.display='inline-block'; } else { rem.classList.remove('red'); btn.style.display='none'; } }; rem.oninput=()=>{ it.remarks=rem.value; }; btn.onclick=()=>{ state.photo={gi,ii}; startPhotoMode(); }; row.appendChild(label); row.appendChild(sel); row.appendChild(rem); row.appendChild(side); box.appendChild(row); }); host.appendChild(box); }); }
+
+    async function startPhotoMode(){ show('photoSection'); setStatus(''); try{ state.phStream=await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ideal:'environment'} } }); const v=$('phVideo'); v.srcObject=state.phStream; await v.play(); }catch(e){ setStatus('تعذّر فتح الكاميرا للتصوير: '+(e&&e.message?e.message:e)); show('nameSection'); } }
+    function stopPhotoMode(){ try{ if(state.phStream){ state.phStream.getTracks().forEach(t=>t.stop()); state.phStream=null; } const v=$('phVideo'); if(v) v.srcObject=null; }catch(_){} }
+
+    $('btnTakePhoto').addEventListener('click', ()=>{ try{ const v=$('phVideo'); if(!v||v.readyState<2) return; const c=document.createElement('canvas'); let W=v.videoWidth, H=v.videoHeight; let w=W,h=H,max=1600; if(Math.max(w,h)>max){ const s=max/Math.max(w,h); w=Math.round(w*s); h=Math.round(h*s);} c.width=w; c.height=h; c.getContext('2d').drawImage(v,0,0,w,h); const data=c.toDataURL('image/jpeg',0.92); const {gi,ii}=state.photo||{}; if(gi!=null && ii!=null){ state.groups[gi].items[ii].photos.push(data); renderChecklist(); setStatus('تمت إضافة الصورة.'); } stopPhotoMode(); show('nameSection'); }catch(e){ setStatus('تعذّر التقاط الصورة.'); } });
+    $('backFromPhoto').addEventListener('click', ()=>{ stopPhotoMode(); show('nameSection'); setStatus(''); });
+
+    function stopAllCams(){ try{ if(state.zxing){ try{ state.zxing.reset(); }catch(_){} state.zxing=null; } if(state.stream){ state.stream.getTracks().forEach(t=>t.stop()); state.stream=null; } const v=$('video'); if(v) v.srcObject=null; stopPhotoMode(); }catch(_){} }
+
+    async function startQR(){ stopAllCams(); const ok=await (async ()=>{ try{ state.stream=await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ideal:'environment'} } }); const v=$('video'); v.srcObject=state.stream; await v.play(); return true; }catch(e){ setStatus('تعذّر فتح الكاميرا: '+(e&&e.message?e.message:e)); return false; } })(); if(!ok) return; if(!window.ZXingBrowser){ setStatus('مكتبة ZXing غير محمّلة'); return; } try{ state.zxing=new ZXingBrowser.BrowserQRCodeReader(); state.scanning=true; state.zxing.decodeFromVideoDevice(undefined, $('video'), async (result,err)=>{ if(!state.scanning) return; if(result && result.getText){ state.scanning=false; const txt=result.getText().trim(); setStatus('تم التقاط الكود: '+txt); stopAllCams(); await handleIdentifier(txt); } }); }catch(e){ setStatus('فشل قارئ QR.'); } }
+
+    async function handleIdentifier(raw){ if(!window.XLSX){ setStatus('مكتبات غير محمّلة'); show('nameSection'); return; } let s=String(raw||'').trim(); try{ if(/^https?:/i.test(s)){ const u=new URL(s); s = u.searchParams.get('id') || u.pathname.split('/').filter(Boolean).pop() || ''; } }catch(_){ } s=s.replace(/^\(?:\.\/\)?(?:data)\//i,'').replace(/\.(xlsx?|pdf)$/i,'').replace(/\b(code|machine|id|name)\b/gi,'').replace(/[#:\s]/g,''); const name=s.toUpperCase(); const urls=[`./data/${name}.xlsx`,`./data/${name.toLowerCase()}.xlsx`]; let ok=null; for(const u of urls){ try{ const r=await fetch(u,{cache:'no-store'}); if(r.ok){ ok=r; break; } }catch(_){} } if(!ok){ setStatus('لم يتم العثور على الملف داخل data/.'); show('nameSection'); return; } const ab=await ok.arrayBuffer(); const wb=XLSX.read(new Uint8Array(ab),{type:'array'}); const sheet= wb.SheetNames.includes(name)? name : wb.SheetNames[0]; const ws=wb.Sheets[sheet]; const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}); state.header=parseHeader(rows); state.groups=parseChecklist(rows); state.currentId=name; renderHeader(); renderChecklist(); setStatus(''); show('nameSection'); }
+
+    // ===== PRINT / PDF =====
+    function buildPrintDOM(){ const tr=T[state.lang]; const L=tr.hdr; const H=state.header||{}; const groups=state.groups||[]; const root=$('printRoot'); root.innerHTML=''; root.style.display='block'; root.style.direction=(state.lang==='AR'?'rtl':'ltr');
+      // Brand + Title
+      const brand=document.createElement('div'); brand.className='brand'; brand.textContent='dnata'; root.appendChild(brand);
+      const title=document.createElement('div'); title.className='print-title'; title.textContent=(state.lang==='AR'?'استمارة الصيانة الوقائية':'Preventive Maintenance Checklist'); root.appendChild(title);
+      const line=document.createElement('div'); line.className='print-line'; root.appendChild(line);
+      const header=document.createElement('div'); header.className='print-header'; const kv=document.createElement('div'); kv.className='print-kv'; header.appendChild(kv); const qr=document.createElement('div'); qr.className='print-qr'; header.appendChild(qr); root.appendChild(header);
+      const kvList=[[L.date,H.date||''],[L.tech,H.tech||''],[L.code,(H.code!=null? String(H.code):(state.currentId||''))],[L.machine,H.machine||''],[L.location,H.location||''],[L.manufacturer,H.manufacturer||''],[L.serial,H.serial||''],[L.model,H.model||''],[L.warranty,H.warranty||''],[L.purchaseDate,H.purchaseDate||''],[L.inDate,H.inDate||'']];
+      kvList.forEach(([k,v])=>{ const c=document.createElement('div'); c.className='cell'; c.innerHTML=`<div class='lab'>${k}:</div><div class='val'>${v||''}</div>`; kv.appendChild(c); });
+      const qrData=getQRDataURL((H.code!=null? String(H.code):(state.currentId||'')),100); if(qrData){ const img=new Image(); img.src=qrData; img.style.maxWidth='96px'; img.style.maxHeight='96px'; qr.appendChild(img);} else { const b=document.createElement('div'); b.className='badge'; b.textContent='QR'; qr.appendChild(b); }
+      // groups
+      groups.forEach((g,gi)=>{ const box=document.createElement('div'); box.className='print-group'; const h=document.createElement('h4'); h.textContent=`${g.titleAR} / ${g.titleEN}`; box.appendChild(h); const head=document.createElement('div'); head.className='grid-head'; head.innerHTML=`<div>${T[state.lang].item}</div><div>${T[state.lang].status}</div><div>${T[state.lang].remarks}</div>`; box.appendChild(head); g.items.forEach((it,ii)=>{ const row=document.createElement('div'); row.className='grid-row'; const itemTag=`G${gi+1}-I${ii+1}`; const txt=((it.ar?it.ar:'') + (it.en? (it.ar?' / '+it.en:it.en):''))||'-'; const col1=document.createElement('div'); col1.textContent=txt; const col2=document.createElement('div'); col2.textContent=(it.status==='ok'?'OK':'NOT OK'); const col3=document.createElement('div'); col3.textContent=(it.remarks||'');
+        // Add a badge in remarks if this item has photos
+        if(it.photos && it.photos.length){ const b=document.createElement('span'); b.className='badge'; b.textContent=itemTag; col3.appendChild(b); }
+        // Color remarks cell if NOT OK and has remarks
+        if(it.status==='fault' && (it.remarks||'').trim()){
+          col3.style.background='#fde7ea'; col3.style.borderColor='#f5c2c7'; col3.style.color='#6b1117';
+        }
+        row.appendChild(col1); row.appendChild(col2); row.appendChild(col3); box.appendChild(row); }); root.appendChild(box); });
+      // Supervisor sign/date at end
+      const sign=document.createElement('div'); sign.className='sign'; sign.innerHTML=`<div class='cell'>${T[state.lang].sign}: ____________________</div><div class='cell'>${T[state.lang].sdate}: ${H.date? H.date.split('T')[0]: '__________'}</div>`; root.appendChild(sign);
+      // Photos grouped by item with captions
+      let anyPhoto=false; groups.forEach((g,gi)=>{ g.items.forEach((it,ii)=>{ if(it.photos && it.photos.length){ if(!anyPhoto){ const phTitle=document.createElement('h4'); phTitle.textContent=T[state.lang].photos; const phWrap=document.createElement('div'); phWrap.className='photos'; phWrap.appendChild(phTitle); const grid=document.createElement('div'); grid.className='photos-grid'; phWrap.appendChild(grid); root.appendChild(phWrap); root._photosGrid=grid; anyPhoto=true; } it.photos.forEach((src,idx)=>{ const fig=document.createElement('div'); fig.className='fig'; const img=new Image(); img.src=src; const cap=document.createElement('div'); const itemTag=`G${gi+1}-I${ii+1}`; const snippet=((it.ar||it.en||'').toString()).slice(0,40); cap.className='cap'; cap.textContent=`${itemTag}: ${snippet}${(it.ar||it.en||'').length>40?'…':''}`; fig.appendChild(img); fig.appendChild(cap); root._photosGrid.appendChild(fig); }); } }); });
+      return root;
+    }
+
+    async function captureToPdf(){ const root=buildPrintDOM(); const { jsPDF } = window.jspdf; const pdf=new jsPDF('p','pt','a4'); const pageW=pdf.internal.pageSize.getWidth(); const pageH=pdf.internal.pageSize.getHeight();
+      const canvas=await html2canvas(root,{scale:2, useCORS:true, background:'#ffffff'});
+      const pageCanvas=document.createElement('canvas'); const pageCtx=pageCanvas.getContext('2d');
+      const fullW=canvas.width; const fullH=canvas.height; const pxPerPt=fullW / pageW; const sliceHpx=Math.floor(pageH * pxPerPt);
+      pageCanvas.width=fullW; pageCanvas.height=sliceHpx; let y=0; let first=true;
+      while(y<fullH){ const h=Math.min(sliceHpx, fullH - y); pageCanvas.height=h; pageCtx.clearRect(0,0,fullW,h); pageCtx.drawImage(canvas, 0, y, fullW, h, 0, 0, fullW, h); const imgData=pageCanvas.toDataURL('image/jpeg',0.96); const hPt = h / pxPerPt; if(!first) pdf.addPage(); pdf.addImage(imgData,'JPEG',0,0,pageW,hPt); first=false; y+=h; }
+      const H=state.header||{}; const code=(H.code!=null? String(H.code):(state.currentId||'machine')); const tech=(H.tech||'NA').replace(/\s+/g,'-').replace(/[^\w\-\u0600-\u06FF]+/g,''); let dt=H.date||''; try{ if(!dt){ const now=new Date(); const tz= now.getTimezoneOffset()*60000; dt=new Date(now - tz).toISOString().slice(0,16); } dt=dt.replace('T','-').replace(/:/g,''); }catch(_){ dt=''; }
+      const fname=`PM_${code}_${dt}_${tech}.pdf`;
+      pdf.save(fname); setStatus(T[state.lang].saved); root.style.display='none'; }
+
+    // Bind buttons
+    const bind=(id,ev,fn)=>{ const el=$(id); if(el && el.addEventListener){ el.addEventListener(ev,fn); return true; } return false; };
+    bind('btnExportPDF','click', ()=>{ if(!(window.jspdf && window.jspdf.jsPDF && window.html2canvas)){ setStatus('مكتبات PDF/Canvas غير محمّلة'); return; } captureToPdf().catch(e=> setStatus('فشل تصدير PDF: '+(e && e.message? e.message:e))); });
+    bind('btnShare','click', ()=>{ if(!(window.jspdf && window.jspdf.jsPDF && window.html2canvas)){ setStatus('مكتبات PDF/Canvas غير محمّلة'); return; } captureToPdf().catch(e=> setStatus('فشل تصدير PDF: '+(e && e.message? e.message:e))); });
+
+    // name/manual/lang
+    bind('btnEnterName','click', ()=>{ state.currentId=null; state.header={}; state.groups=[]; renderChecklist(); show('nameSection'); setStatus(''); $('nameForm').style.display='grid'; $('headerCard').style.display='none'; $('bottomBar').style.display='none'; const m=$('machineName'); if(m){ m.value=''; m.focus(); } });
+    bind('confirmName','click', async ()=>{ const v=$('machineName').value.trim(); if(v){ await handleIdentifier(v); } else setStatus('أدخل اسم / كود الآلة.'); });
+    bind('backHomeName','click', ()=>{ show('homeSection'); setStatus(''); });
+    bind('btnBackBottom','click', ()=>{ show('homeSection'); setStatus(''); });
+    bind('btnManual','click', ()=>{ show('manualSection'); setStatus(''); });
+    bind('backHomeManual','click', ()=>{ show('homeSection'); setStatus(''); });
+    bind('openManualBtn','click', ()=>{ const v=($('manualOpenInput').value||'').trim(); if(!v){ setStatus('أدخل اسم الآلة / الكود.'); return; } let n=v.replace(/[#:\s]/g,'').toUpperCase(); window.open(`./manual/${n}.pdf`,'_blank'); });
+
+    // scan QR
+    bind('btnScan','click', ()=>{ show('scanSection'); setStatus(''); startQR(); });
+    bind('backHomeScan','click', ()=>{ state.scanning=false; stopAllCams(); show('homeSection'); setStatus(''); });
+
+    bind('langToggle','click', toggleLang);
+    const saved=localStorage.getItem('pm_lang'); state.lang=(saved==='EN'?'EN':'AR'); document.documentElement.dir=(state.lang==='AR'?'rtl':'ltr'); document.documentElement.lang=(state.lang==='AR'?'ar':'en'); applyLang(); show('homeSection'); setStatus('');
+  });
+})();
+</script>
+
+<script src="./libs/xlsx.full.min.js"></script>
+<script src="./libs/html2canvas.min.js"></script>
+<script src="./libs/jspdf.umd.min.js"></script>
+<script src="./libs/qrcode.min.js"></script>
+<script src="./libs/zxing-browser.min.js"></script>
+<script src="./app/faults.js"></script>
+<script src="./app/admin.js"></script>
+
+<script>
+(function(){
+  function __setBtnLang(lang){
+    var m=document.getElementById('btnMonthlyFaults');
+    var a=document.getElementById('btnAdmin');
+    if(m) m.textContent = (lang==='AR'? 'تقرير الأعطال الشهريه':'Monthly Faults Report');
+    if(a) a.textContent = (lang==='AR'? 'الإدارة':'Administration');
+  }
+  function __currentLang(){ try{ return (localStorage.getItem('pm_lang')==='EN')? 'EN':'AR'; }catch(e){ return 'AR'; } }
+  document.addEventListener('DOMContentLoaded', function(){
+    __setBtnLang(__currentLang());
+    var lt=document.getElementById('langToggle');
+    if(lt){ lt.addEventListener('click', function(){ setTimeout(function(){ __setBtnLang(__currentLang()); }, 50); }); }
+  });
+  window.__syncHomeButtonsLang = __setBtnLang;
+})();
+</script>
+
+<script src="./app/boot_hotfix.js?v=5"></script>
+</body>
+</html>
